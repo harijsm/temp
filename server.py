@@ -1,5 +1,6 @@
 # Echo server program
 import socket
+import datetime
 
 HOST = ''                 # Symbolic name meaning all available interfaces
 PORT = 50007              # Arbitrary non-privileged port
@@ -23,15 +24,27 @@ class Connect(object):
             print 'Connected by', client_address
 
             try:
-            	if client_address[0] != ACCEPT_IP:
-            		connection.sendall('GO AWAY!!')
-            		connection.close()
+                if client_address[0] != ACCEPT_IP:
+                    connection.sendall('GO AWAY!!')
+                    connection.close()
 
                 data = connection.recv(1024)
                 print(data)
-                connection.sendall(data)
+                if self.write(data):
+                    connection.sendall('data logged: '+ data)
+                else:
+                    connection.sendall('error logging data: '+ data)
             finally:
                 connection.close()
+
+    def write(self, string):
+        try:
+            file=open("/Users/harijsme/Documents/temperature_logs/test_"+datetime.datetime.now().strftime("%d.%m.%Y")+".txt",mode="a")
+            file.write(string+'\n')
+            file.close()
+            return True
+        except:
+            return False
 
 def main():
     connect = Connect()
