@@ -20,17 +20,20 @@ class Connect(object):
         return sock
 
     def send(self, command):
-        sock = self.connect()
-        recv_data = ""
-        data = True
+        try:
+            sock = self.connect()
+            recv_data = ""
+            data = True
 
-        print('sending: '+ command)
-        sock.sendall(command)
+            print('sending: '+ command)
+            sock.sendall(command)
 
-        while data:
-            data = sock.recv(1024)
-            recv_data += data
-        return 'response: '+ recv_data
+            while data:
+                data = sock.recv(1024)
+                recv_data += data
+            return 'response: '+ recv_data
+        except:
+            return 'Connection refused!! error logging data: '+command
     def write(self, string):
         try:
             if not os.path.exists(BACKUP_DIR):
@@ -48,13 +51,13 @@ connect = Connect()
 starttime=time.time()
 
 while True:
-  send_text = str(random.random())
-  response = connect.send(send_text)
-  if "error logging data" in response:
-    status = connect.write(send_text)
-    print response
-    print (status+ " writing backup log on SD: "+ send_text)
-  else:
-    print response
+    send_text = str(random.random())
+    response = connect.send(send_text)
+    if "error logging data" in response:
+        status = connect.write(send_text)
+        print response
+        print (status+ " writing backup log on SD: "+ send_text)
+    else:
+        print response
   
-  time.sleep(TIMEOUT - ((time.time() - starttime) % TIMEOUT))
+    time.sleep(TIMEOUT - ((time.time() - starttime) % TIMEOUT))
